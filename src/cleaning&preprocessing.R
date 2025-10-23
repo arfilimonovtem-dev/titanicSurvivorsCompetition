@@ -21,7 +21,7 @@ summary(train)
 library(dplyr)
 library(stringr)
 library(tidyr)
-titles <- train$Name %>% sub(".*?, (.*?)\\..*", "\\1", .) # extracting titles like Mr Sir etc.
+titles <- test$Name %>% sub(".*?, (.*?)\\..*", "\\1", .) # extracting titles like Mr Sir etc.
 title_list <- unique(titles)
 #[1] "Mr"           "Mrs"          "Miss"         "Master"      
 #[5] "Don"          "Rev"          "Dr"           "Mme"         
@@ -29,8 +29,8 @@ title_list <- unique(titles)
 #[13] "Mlle"         "Col"          "Capt"         "the Countess"
 #[17] "Jonkheer"
 
-train$Title <- titles
-data_1 <- train %>%
+test$Title <- titles
+data_4 <- test %>%
   mutate(
     Title = case_when(
       Title %in% c("Don", "Major", "Capt", "Jonkheer", "Rev", "Col") ~ "Mr",
@@ -44,21 +44,21 @@ data_1 <- train %>%
 
 # we have a lot of NA in Cabin column, so we might drop it
 data_2$Deck <- data_1$Cabin 
-data_2$Deck <- data_2$Deck %>% gsub("[^A-Z]", "", .) # but first we introduce Deck
-data_2$Deck <- replace_na(data_2$Deck, "Unknown")
-data_2 <- data_1 %>% select(-Cabin)
+data_4$Deck <- data_4$Cabin %>% gsub("[^A-Z]", "", .) # but first we introduce Deck
+data_4$Deck <- replace_na(data_4$Deck, "Unknown")
+data_4 <- data_4 %>% select(-Cabin)
 # passenger id does not also give any valuable information
-data_2 <- data_2 %>% select(-PassengerId)
+data_4 <- data_4 %>% select(-PassengerId)
 # we also do not really need ticket number (unless we decide to investigate sum supernatural effect of ticket numbers)
-data_2 <- data_2 %>% select(-Ticket)
+data_4 <- data_4 %>% select(-Ticket)
 # embarkation also useless
-data_2 <- data_2 %>% select(-Embarked)
+data_4 <- data_4 %>% select(-Embarked)
 # we also might wanna drop names for the sake of ml
-data_2  <- data_2 %>% select(-Name)
+data_4  <- data_4 %>% select(-Name)
 
 # let's summarize the family size
-data_2$FamilySize <- data_2$SibSp + data_2$Parch
+data_4$FamilySize <- data_4$SibSp + data_4$Parch
 
 # replace NA in age by a mean of ages
-mean_ages <- mean(data_2$Age, na.rm = TRUE)
-data_2$Age[is.na(data_2$Age)] <- mean_ages
+mean_ages <- mean(data_4$Age, na.rm = TRUE)
+data_4$Age[is.na(data_4$Age)] <- mean_ages
