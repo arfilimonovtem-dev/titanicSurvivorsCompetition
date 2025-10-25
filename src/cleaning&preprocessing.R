@@ -30,21 +30,21 @@ title_list <- unique(titles)
 #[17] "Jonkheer"
 
 test$Title <- titles
-data_4 <- test %>%
+data_4 <- data_4 %>%
   mutate(
     Title = case_when(
       Title %in% c("Don", "Major", "Capt", "Jonkheer", "Rev", "Col") ~ "Mr",
-      Title %in% c("Countess", "Mme") ~ "Mrs",
+      Title %in% c("Countess", "Mme", "Dona") ~ "Mrs",
       Title %in% c("Mlle", "Ms") ~ "Miss",
-      Title == "Dr" & Sex == "Male" ~ "Mr",
-      Title == "Dr" & Sex == "Female" ~ "Mrs",
+      Title == "Dr" & Sex == "male" ~ "Mr",
+      Title == "Dr" & Sex == "female" ~ "Mrs",
       TRUE ~ Title
     )
   )
 
 # we have a lot of NA in Cabin column, so we might drop it
 data_2$Deck <- data_1$Cabin 
-data_4$Deck <- data_4$Cabin %>% gsub("[^A-Z]", "", .) # but first we introduce Deck
+data_5$Deck <- data_4$Deck %>% gsub("[A-Z]", "", .) # but first we introduce Deck
 data_4$Deck <- replace_na(data_4$Deck, "Unknown")
 data_4 <- data_4 %>% select(-Cabin)
 # passenger id does not also give any valuable information
@@ -62,3 +62,6 @@ data_4$FamilySize <- data_4$SibSp + data_4$Parch
 # replace NA in age by a mean of ages
 mean_ages <- mean(data_4$Age, na.rm = TRUE)
 data_4$Age[is.na(data_4$Age)] <- mean_ages
+
+median_fares <- median(data_4$Fare, na.rm = TRUE)
+data_4$Fare[is.na(data_4$Fare)] <-median_fares
